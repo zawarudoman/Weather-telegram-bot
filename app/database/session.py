@@ -17,8 +17,9 @@ else:
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-"""Безопасное закрытие сессии даже при ошибки"""
+
 def get_db():
+    """Безопасное закрытие сессии"""
     db = SessionLocal()
     try:
         yield db
