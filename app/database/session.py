@@ -1,19 +1,16 @@
-import os
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+
+DATABASE_URL = "sqlite:///./mydatabase.db"
 
 
-if DATABASE_URL.startswith('sqlite'):
-    engine = create_engine(
-        "sqlite:///mydatabase.db",
-        connect_args={'check_same_thread': False},
-        echo=True
-    )
-else:
-    engine = create_engine("sqlite:///mydatabase.db")
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    echo=True  # Показывать SQL запросы в консоли
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -26,3 +23,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def create_tables():
+    """Создает все таблицы в базе данных"""
+    Base.metadata.create_all(bind=engine)
