@@ -1,6 +1,15 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import config
+from app.models.user import User
 from weather_api import WeatherService
+from app.database.session import create_tables, SessionLocal
+
+
+def init_database():
+    """Инициализация базы данных"""
+    print("Создание таблиц...")
+    create_tables()
+    print("Таблицы созданы успешно!")
 
 
 class WeatherBot:
@@ -70,5 +79,6 @@ class WeatherBot:
 
 
 if __name__ == "__main__":
+    init_database()
     bot = WeatherBot()
     bot.start()
