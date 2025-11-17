@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, MetaData
 from sqlalchemy.sql import func
-from app.database.session import Base, engine
+from app.database.session import Base, engine, SessionLocal
 
 
 metadata = MetaData()
@@ -20,15 +20,17 @@ class User(Base):
     def __repr__(self):
         return f'<<User: telegram_id={self.telegram_id}, username:{self.username}, active={self.active_user}'
 
-    def create(self, telegram_id: int, username: str, first_name: str, last_name: str):
+    @staticmethod
+    def create(telegram_id: int, username: str, first_name: str, last_name: str):
         user = User(
             telegram_id=telegram_id,
             username=username,
             first_name=first_name,
             last_name=last_name
         )
-        self.db.add(user)
-        self.db.commit()
+        db = SessionLocal()
+        db.add(user)
+        db.commit()
         return user
 
 
