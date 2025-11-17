@@ -32,7 +32,7 @@ class WeatherBot:
         self.updater.start_polling()
         self.updater.idle()
 
-    def start_command(self, update):
+    def start_command(self, update, context):
         welcome_text = """
         👋 Привет! Я погодный бот.
 
@@ -48,6 +48,14 @@ class WeatherBot:
         ❓ Помощь: /help
         """
         update.message.reply_text(welcome_text)
+        data_user = update.message['chat']
+        User.create(
+            data_user['id'],
+            data_user['username'],
+            data_user['first_name'],
+            data_user['last_name']
+        )
+        print(data_user)
 
     def help_command(self, update):
         help_text = """
