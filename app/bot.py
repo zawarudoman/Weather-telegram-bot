@@ -55,7 +55,7 @@ class WeatherBot:
             data_user['first_name'],
             data_user['last_name']
         )
-        print(data_user)
+        print(f'Создана запись в таблице User {data_user["username"]}')
 
     def help_command(self, update):
         help_text = """
