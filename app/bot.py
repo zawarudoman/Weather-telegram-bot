@@ -49,7 +49,7 @@ class WeatherBot:
         """
         update.message.reply_text(welcome_text)
         data_user = update.message['chat']
-        User.create(
+        User.create_or_verification(
             data_user['id'],
             data_user['username'],
             data_user['first_name'],

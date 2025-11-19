@@ -21,7 +21,7 @@ class User(Base):
         return f'<<User: telegram_id={self.telegram_id}, username:{self.username}, active={self.active_user}'
 
     @staticmethod
-    def create(telegram_id: int, username: str, first_name: str, last_name: str):
+    def create_or_verification(telegram_id: int, username: str, first_name: str, last_name: str):
         user = User(
             telegram_id=telegram_id,
             username=username,
@@ -29,8 +29,11 @@ class User(Base):
             last_name=last_name
         )
         db = SessionLocal()
-        db.add(user)
-        db.commit()
+        if db.query(User).filter(User.telegram_id) is not None:
+            print('Юзер существует')
+        else:
+            db.add(user)
+            db.commit()
         return user
 
 
