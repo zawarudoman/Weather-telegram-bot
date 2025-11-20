@@ -36,5 +36,13 @@ class User(Base):
             db.commit()
         return user
 
+    @staticmethod
+    def delete_user(telegram_id: int):
+        db = SessionLocal()
+        user = db.query(User).filter(User.telegram_id == telegram_id).first()
+        db.delete(user)
+        db.commit()
+        return print('User удален')
+
 
 metadata.create_all(engine)
