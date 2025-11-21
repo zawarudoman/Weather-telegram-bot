@@ -28,10 +28,10 @@ class User(Base):
     def create_or_verification(telegram_id: int, username: str, first_name: str, last_name: str):
         """
         Создание пользователя
-        :param telegram_id:
-        :param username:
-        :param first_name:
-        :param last_name:
+        :param telegram_id: уникальный id в телеграме
+        :param username: уникальный username из телеграмма
+        :param first_name: Имя
+        :param last_name: фамилия (не обязательный параметр)
         :return: User (запись из таблицы с созданным пользователем)
         """
         user = User(
