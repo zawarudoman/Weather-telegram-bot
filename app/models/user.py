@@ -7,6 +7,10 @@ metadata = MetaData()
 
 
 class User(Base):
+    """
+    Модель пользователя
+    """
+
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
@@ -22,6 +26,14 @@ class User(Base):
 
     @staticmethod
     def create_or_verification(telegram_id: int, username: str, first_name: str, last_name: str):
+        """
+        Создание пользователя
+        :param telegram_id:
+        :param username:
+        :param first_name:
+        :param last_name:
+        :return: User (запись из таблицы с созданным пользователем)
+        """
         user = User(
             telegram_id=telegram_id,
             username=username,
@@ -38,11 +50,19 @@ class User(Base):
 
     @staticmethod
     def delete_user(telegram_id: int):
+        """
+        Удаление пользователя с базы данных
+        :param telegram_id:
+        :return: Удаленный пользователь, получаем подтверждение в консоль
+        """
         db = SessionLocal()
         user = db.query(User).filter(User.telegram_id == telegram_id).first()
-        db.delete(user)
-        db.commit()
-        return print('User удален')
+        if user is not None:
+            db.delete(user)
+            db.commit()
+            return print('User удален')
+        else:
+            return print('User не существует')
 
 
 metadata.create_all(engine)
