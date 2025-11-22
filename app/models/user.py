@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, MetaData
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.database.session import Base, engine, SessionLocal
-
 
 metadata = MetaData()
 
@@ -20,6 +20,12 @@ class User(Base):
     last_name = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     active_user = Column(Boolean, default=True)
+    language = Column(String, default='ru')
+    units = Column(String, default='metric')
+    notifications_enable = Column(Boolean, default=False)
+    notifications_time = Column(DateTime, default='08:00')
+
+    favorite_city = relationship('User', back_populates='users')  # связь с таблицей favorite_city
 
     def __repr__(self):
         return f'<<User: telegram_id={self.telegram_id}, username:{self.username}, active={self.active_user}'
