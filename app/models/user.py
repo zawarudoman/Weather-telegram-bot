@@ -11,7 +11,7 @@ class User(Base):
     Модель пользователя
     """
 
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, index=True)
     telegram_id = Column(Integer, unique=True, index=True)
@@ -25,7 +25,7 @@ class User(Base):
     notifications_enable = Column(Boolean, default=False)
     notifications_time = Column(DateTime, default='08:00')
 
-    favorite_city = relationship('User', back_populates='users')  # связь с таблицей favorite_city
+    favorite_city = relationship('FavoriteCity', back_populates='user')  # связь с таблицей favorite_city
 
     def __repr__(self):
         return f'<<User: telegram_id={self.telegram_id}, username:{self.username}, active={self.active_user}'
@@ -40,24 +40,29 @@ class User(Base):
         :param last_name: фамилия (не обязательный параметр)
         :return: User (запись из таблицы с созданным пользователем)
         """
-        user = User(
-            telegram_id=telegram_id,
-            username=username,
-            first_name=first_name,
-            last_name=last_name
-        )
+
         db = SessionLocal()
-        if db.query(User).filter(User.telegram_id) is not None:
+        user = db.query(User).filter(User.telegram_id)
+        if user:
             print('Юзер существует')
+            return user
         else:
+            user = User(
+                telegram_id=telegram_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name
+            )
             db.add(user)
             db.commit()
+            db.refresh(user)
         return user
 
     @staticmethod
     def delete_user(telegram_id: int):
         """
-        Удаление пользователя с базы данных
+        Удаление пользователя из базы
+
         :param telegram_id:
         :return: Удаленный пользователь, получаем подтверждение в консоль
         """
@@ -72,3 +77,4 @@ class User(Base):
 
 
 metadata.create_all(engine)
+
