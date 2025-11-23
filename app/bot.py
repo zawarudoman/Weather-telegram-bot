@@ -1,6 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import config
 from app.models.user import User
+from app.models.favorite_city import FavoriteCity
 from weather_api import WeatherService
 from app.database.session import create_tables, SessionLocal
 
@@ -23,11 +24,11 @@ class WeatherBot:
         self.dispatcher.add_handler(CommandHandler("start", self.start_command))
         self.dispatcher.add_handler(CommandHandler("help", self.help_command))
         self.dispatcher.add_handler(CommandHandler("weather", self.weather_command))
+        self.dispatcher.add_handler(CommandHandler("favorite", self.favorite_command))
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, self.handle_message))
 
     def start(self):
         self.setup_handlers()
-
         print("Бот запущен...")
         self.updater.start_polling()
         self.updater.idle()
@@ -39,7 +40,10 @@ class WeatherBot:
         🌤️ Чтобы узнать погоду, отправь мне:
         - Название города
         - Или используй команду /weather Москва
-
+        
+        🏙️ Добавить любимый город:
+        - Используй команду /favorite
+        
         📍 Примеры:
         Москва
         London
@@ -77,7 +81,13 @@ class WeatherBot:
         city = ' '.join(context.args)
         self.send_weather(update, city)
 
-    def handle_message(self, update):
+    def favorite_command(self, update, context):
+        get_user_id = update.message.chat_id
+        city = User.get_favorite_cities(get_user_id)
+        print(city)
+
+
+    def handle_message(self, update, context):
         city = update.message.text.strip()
         self.send_weather(update, city)
 
