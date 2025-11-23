@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, MetaData, ForeignKey, re
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, MetaData, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database.session import Base, engine, SessionLocal
