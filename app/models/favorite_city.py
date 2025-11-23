@@ -16,4 +16,4 @@ class FavoriteCity(Base):
     city_name = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now)
 
-    user = relationship(User, back_populates='favorite_city')
+    user = relationship('User', back_populates='favorite_city')
