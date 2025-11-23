@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, MetaData
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database.session import Base, engine, SessionLocal
+from app.models.favorite_city import FavoriteCity
 
 metadata = MetaData()
 
@@ -31,7 +32,7 @@ class User(Base):
         return f'<<User: telegram_id={self.telegram_id}, username:{self.username}, active={self.active_user}'
 
     @staticmethod
-    def create_or_verification(telegram_id: int, username: str, first_name: str, last_name: str):
+    def get_or_create(telegram_id: int, username: str, first_name: str, last_name: str):
         """
         Создание пользователя
         :param telegram_id: уникальный id в телеграме
@@ -75,6 +76,27 @@ class User(Base):
         else:
             return print('User не существует')
 
+        def get_favorite_cities(self):
+            """Получить все любимые города пользователя"""
+            db = SessionLocal()
+            return db.query(FavoriteCity).filter(FavoriteCity.user_id == self.id).all()
+
+        def add_favorite_city(self, city_name: str):
+            db = SessionLocal()
+            existing_city = db.query(FavoriteCity).filter(
+                FavoriteCity.user_id == self.id,
+                FavoriteCity.city_name == city_name
+            )
+            if existing_city:
+                return print('Город уже добавлен в избранное')
+            favorite_city = FavoriteCity(
+                user_id=self.id,
+                city_name=city_name
+            )
+            db.add(favorite_city)
+            db.commit()
+            db.refresh(favorite_city)
+            return favorite_city
+
 
 metadata.create_all(engine)
-
