@@ -42,7 +42,8 @@ class WeatherBot:
         - Или используй команду /weather Москва
         
         🏙️ Добавить любимый город:
-        - Используй команду /favorite
+        - Используй команду /favorite_city
+        - Узнать свои любимые города /favorite
         
         📍 Примеры:
         Москва
@@ -82,9 +83,18 @@ class WeatherBot:
         self.send_weather(update, city)
 
     def favorite_command(self, update, context):
+        favorite_city_text = """
+        У тебя пока нет любимых городов(
+        
+        Давай добавим их, напиши мне /favorite_cite Москва
+        И я добавлю этот город в список твоих любимых
+        """
         get_user_id = update.message.chat_id
         city = User.get_favorite_cities(get_user_id)
-        print(city)
+        if city:
+            update.message.reply_text(f'Твои любимые города: {city}')
+        else:
+            update.message.reply_text(favorite_city_text)
 
 
     def handle_message(self, update, context):
