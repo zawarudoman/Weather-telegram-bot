@@ -11,7 +11,6 @@ class User(Base):
     """
     Модель пользователя
     """
-
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, index=True)
@@ -75,28 +74,28 @@ class User(Base):
             return print('User удален')
         else:
             return print('User не существует')
+    @staticmethod
+    def get_favorite_cities(user_id: int):
+        """Получить все любимые города пользователя"""
+        db = SessionLocal()
+        return db.query(FavoriteCity).filter(FavoriteCity.user_id == user_id).all()
 
-        def get_favorite_cities(self):
-            """Получить все любимые города пользователя"""
-            db = SessionLocal()
-            return db.query(FavoriteCity).filter(FavoriteCity.user_id == self.id).all()
-
-        def add_favorite_city(self, city_name: str):
-            db = SessionLocal()
-            existing_city = db.query(FavoriteCity).filter(
-                FavoriteCity.user_id == self.id,
-                FavoriteCity.city_name == city_name
-            )
-            if existing_city:
-                return print('Город уже добавлен в избранное')
-            favorite_city = FavoriteCity(
-                user_id=self.id,
-                city_name=city_name
-            )
-            db.add(favorite_city)
-            db.commit()
-            db.refresh(favorite_city)
-            return favorite_city
+    def add_favorite_city(self, city_name: str):
+        db = SessionLocal()
+        existing_city = db.query(FavoriteCity).filter(
+            FavoriteCity.user_id == self.id,
+            FavoriteCity.city_name == city_name
+        )
+        if existing_city:
+            return print('Город уже добавлен в избранное')
+        favorite_city = FavoriteCity(
+            user_id=self.id,
+            city_name=city_name
+        )
+        db.add(favorite_city)
+        db.commit()
+        db.refresh(favorite_city)
+        return favorite_city
 
 
 metadata.create_all(engine)
