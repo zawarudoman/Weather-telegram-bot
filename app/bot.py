@@ -25,7 +25,9 @@ class WeatherBot:
         self.dispatcher.add_handler(CommandHandler("help", self.help_command))
         self.dispatcher.add_handler(CommandHandler("weather", self.weather_command))
         self.dispatcher.add_handler(CommandHandler("favorite", self.favorite_command))
+        self.dispatcher.add_handler(CommandHandler("favorite_city", self.add_favorite_command))
         self.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, self.handle_message))
+
 
     def start(self):
         self.setup_handlers()
@@ -86,7 +88,7 @@ class WeatherBot:
         favorite_city_text = """
         У тебя пока нет любимых городов(
         
-        Давай добавим их, напиши мне /favorite_cite Москва
+        Давай добавим их, напиши мне /favorite_city Москва
         И я добавлю этот город в список твоих любимых
         """
         get_user_id = update.message.chat_id
@@ -96,6 +98,13 @@ class WeatherBot:
         else:
             update.message.reply_text(favorite_city_text)
 
+    def add_favorite_command(self, update, context):
+        text = """
+        Добавил город в твои любимые
+        """
+        city_name = update.message.text.strip()
+        get_user_id = update.message.chat_id
+        User.add_favorite_city()
 
     def handle_message(self, update, context):
         city = update.message.text.strip()
