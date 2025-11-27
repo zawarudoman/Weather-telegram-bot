@@ -93,7 +93,7 @@ class WeatherBot:
         """
         get_user_id = update.message.chat_id
         city = User.get_favorite_cities(get_user_id)
-        if city:
+        if city is not None:
             update.message.reply_text(f'Твои любимые города: {city}')
         else:
             update.message.reply_text(favorite_city_text)
@@ -102,9 +102,9 @@ class WeatherBot:
         text = """
         Добавил город в твои любимые
         """
-        city_name = update.message.text.strip()
-        get_user_id = update.message.chat_id
-        User.add_favorite_city()
+        city_name = ' '.join(context.args)
+        get_user_id = int(update.message.chat_id)
+        User.add_favorite_city(get_user_id, city_name)
 
     def handle_message(self, update, context):
         city = update.message.text.strip()
