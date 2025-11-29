@@ -31,34 +31,6 @@ class User(Base):
         return f'<<User: telegram_id={self.telegram_id}, username:{self.username}, active={self.active_user}'
 
     @staticmethod
-    def get_or_create(telegram_id: int, username: str, first_name: str, last_name: str):
-        """
-        Создание пользователя
-        :param telegram_id: уникальный id в телеграме
-        :param username: уникальный username из телеграмма
-        :param first_name: Имя
-        :param last_name: фамилия (не обязательный параметр)
-        :return: User (запись из таблицы с созданным пользователем)
-        """
-
-        db = SessionLocal()
-        user = db.query(User).filter(User.telegram_id)
-        if user:
-            print('Юзер существует')
-            return user
-        else:
-            user = User(
-                telegram_id=telegram_id,
-                username=username,
-                first_name=first_name,
-                last_name=last_name
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-        return user
-
-    @staticmethod
     def delete_user(telegram_id: int):
         """
         Удаление пользователя из базы
@@ -99,5 +71,46 @@ class User(Base):
         db.refresh(favorite_city)
         return favorite_city
 
+def get_or_create(telegram_id: int, username: str, first_name: str, last_name: str):
+    """
+    Создание пользователя
+    :param telegram_id: уникальный id в телеграме
+    :param username: уникальный username из телеграмма
+    :param first_name: Имя
+    :param last_name: фамилия (не обязательный параметр)
+    :return: User (запись из таблицы с созданным пользователем)
+    """
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.telegram_id == telegram_id)
+
+        if user is None:
+            user = User(
+                telegram_id=telegram_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return user
+            print(f'Создан новый пользователь: {user}')
+        else:
+            print(f'Пользователь уже существует: {user}')
+            # Обновляем данные существующего пользователя
+            user.username = username
+            user.first_name = first_name
+            user.last_name = last_name
+            db.commit()
+            db.refresh(user)
+        return user
+    except Exception as e:
+        db.rollback()
+        print(f"Ошибка при создании/получении пользователя: {e}")
+        return None
+    finally:
+        db.close()
 
 metadata.create_all(engine)
